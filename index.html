@@ -160,7 +160,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('overview')">
                 <div class="orb-glow" style="transform: scale(0.4); transform-origin: left center; width: 40px; height: 40px; margin-right: -15px;"></div>
-                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.3.5</span></span>
+                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.4.1</span></span>
             </div>
             <div class="flex flex-wrap justify-center gap-4 md:space-x-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
                 <span id="btn-overview" class="cursor-pointer hover:text-white transition" onclick="showView('overview')">Overview</span>
@@ -265,9 +265,8 @@
                 </div>
             </div>
 
-            <!-- Dynamic Grid (Auto-populated by CSV) -->
+            <!-- Dynamic Grid -->
             <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <!-- Fallback Loading/Idle State -->
                 <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-forecast-state">
                     <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
                     <p class="text-[10px] text-gray-600 font-mono uppercase tracking-[0.2em]">Automated connection established. Awaiting forecast.csv propagation.</p>
@@ -291,7 +290,7 @@
                 </div>
             </div>
 
-            <!-- Dynamic Grid (Auto-populated by CSV) -->
+            <!-- Dynamic Grid -->
             <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-results-state">
                     <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
@@ -316,19 +315,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Season Record</div>
-                    <div class="text-3xl font-black text-white">45-32</div>
+                    <div class="text-3xl font-black text-white" id="perf-record">--</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Win %</div>
-                    <div class="text-3xl font-black text-white">58.4%</div>
+                    <div class="text-3xl font-black text-white" id="perf-winpct">--</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Avg Score Deviation</div>
-                    <div class="text-3xl font-black text-white">± 1.25</div>
+                    <div class="text-3xl font-black text-white" id="perf-avgdev">--</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Brier Score Audited</div>
-                    <div class="text-3xl font-black text-emerald-400">Pass</div>
+                    <div class="text-3xl font-black text-emerald-400" id="perf-brier">--</div>
                 </div>
             </div>
 
@@ -393,13 +392,34 @@
                     &copy; 2026 MACHINE LEARNING BALL // CANONICAL SOURCE
                 </div>
                 <div class="text-[9px] text-gray-800 uppercase tracking-tighter italic">
-                    Proprietary Stack v3.3.5 • Statistics Only
+                    Proprietary Stack v3.4.1 • Statistics Only
                 </div>
             </div>
         </footer>
     </main>
 
     <script>
+        // ==========================================
+        // ROBUST CSV PARSER (Fix for Commas in Quotes)
+        // ==========================================
+        function csvToArray(strData) {
+            const objPattern = new RegExp(("(\\,|\\r?\\n|\\r|^)(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^\\,\\r\\n]*))"), "gi");
+            let arrData = [[]];
+            let arrMatches = null;
+            while (arrMatches = objPattern.exec(strData)) {
+                let strMatchedDelimiter = arrMatches[1];
+                if (strMatchedDelimiter.length && strMatchedDelimiter !== ",") arrData.push([]);
+                let strMatchedValue;
+                if (arrMatches[2]) strMatchedValue = arrMatches[2].replace(new RegExp("\"\"", "g"), "\"");
+                else strMatchedValue = arrMatches[3];
+                arrData[arrData.length - 1].push(strMatchedValue);
+            }
+            return arrData.filter(row => row.length > 1 || (row.length === 1 && row[0].trim() !== ''));
+        }
+
+        // --- GLOBAL STATE ---
+        let perfDataCache = null;
+
         // --- NAVIGATION LOGIC ---
         function showView(viewName) {
             document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
@@ -413,40 +433,36 @@
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (viewName === 'performance' && !window.chartsRendered) {
-                renderCharts();
+            if (viewName === 'performance' && !window.chartsRendered && perfDataCache) {
+                renderCharts(perfDataCache);
                 window.chartsRendered = true;
             }
         }
 
         // ==========================================
-        // FORECASTS (AUTO-FETCH ONLY)
+        // FORECASTS (AUTO-FETCH)
         // ==========================================
         async function fetchForecastCSV() {
-            const grid = document.getElementById('games-grid');
             try {
-                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
-                
+                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
                 const response = await fetch('data/forecast.csv');
                 if (!response.ok) throw new Error("forecast.csv not found.");
-                
                 const text = await response.text();
                 const data = parseForecastCSV(text);
                 renderGames(data);
             } catch (error) {
-                console.log("Awaiting forecast canonical data feed:", error.message);
+                console.log("Awaiting forecast data feed:", error.message);
             }
         }
 
         function parseForecastCSV(text) {
-            const lines = text.split(/\r?\n/);
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const rows = csvToArray(text);
+            if (rows.length < 2) return [];
+            const headers = rows[0].map(h => h ? h.trim().toLowerCase() : "");
             
-            return lines.slice(1).filter(l => l.trim()).map(line => {
-                const values = line.split(',').map(v => v.trim()); 
+            return rows.slice(1).map(values => {
                 let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
+                headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
 
                 const away = obj.away_team || obj.away || "AWAY";
                 const home = obj.home_team || obj.home || "HOME";
@@ -457,19 +473,20 @@
                 if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
                 let rawDate = obj.game_day_ct || obj.date || new Date().toISOString();
-                let dateStr = new Date().toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                let dateStr = "TBD";
                 try {
                     const d = new Date(rawDate);
                     if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                    else dateStr = rawDate.toUpperCase();
                 } catch(e) {}
 
                 let insight = obj.insight || "";
                 if (!insight) {
-                    if (obj.volatile_flag === "TRUE") insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
+                    if (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1") insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
                     else if (obj.confidence_tag === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
                     else insight = `Standard queue pressure. Reliability level NORMAL.`;
                 }
-                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: dateStr, volatile: obj.volatile_flag === "TRUE" };
+                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: dateStr, volatile: (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1") };
             });
         }
 
@@ -477,7 +494,8 @@
             const grid = document.getElementById('games-grid');
             const dateLabel = document.getElementById('forecast-date');
             if(games.length === 0) return;
-            dateLabel.innerText = games[0].date;
+            
+            dateLabel.innerText = "Game Scheduled: " + games[0].date;
             grid.innerHTML = ''; 
 
             games.forEach(game => {
@@ -486,7 +504,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div class="orb-glow"></div>
-                        <div class="node-tag">NODE 3.3.5</div>
+                        <div class="node-tag">NODE 3.4.1</div>
                     </div>
                     <div class="matchup-web">${game.away} @ ${game.home}</div>
                     <div class="date-web">${game.date}</div>
@@ -513,15 +531,13 @@
         }
 
         // ==========================================
-        // DAILY RESULTS (AUTO-FETCH ONLY)
+        // DAILY RESULTS (AUTO-FETCH)
         // ==========================================
         async function fetchResultsCSV() {
             try {
-                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
-                
+                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
                 const response = await fetch('data/results.csv');
                 if (!response.ok) throw new Error("results.csv not found.");
-                
                 const text = await response.text();
                 const data = parseResultsCSV(text);
                 renderResultGames(data);
@@ -531,22 +547,18 @@
         }
 
         function parseResultsCSV(text) {
-            const lines = text.split(/\r?\n/);
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const rows = csvToArray(text);
+            if (rows.length < 2) return [];
+            const headers = rows[0].map(h => h ? h.trim().toLowerCase() : "");
             
-            return lines.slice(1).filter(l => l.trim()).map(line => {
-                const values = line.split(',').map(v => v.trim()); 
+            return rows.slice(1).map(values => {
                 let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
+                headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
 
                 const away = obj.away_team || obj.away || "AWAY";
                 const home = obj.home_team || obj.home || "HOME";
-                
                 const projAway = obj.away_rpg_blend || obj.proj_away || "0.0";
                 const projHome = obj.home_rpg_blend || obj.proj_home || "0.0";
-                
-                // Flexible mapping for actual scores
                 const actAway = obj.actual_away || obj.away_final || obj.away_score || "0";
                 const actHome = obj.actual_home || obj.home_final || obj.home_score || "0";
 
@@ -555,15 +567,14 @@
                 try {
                     const d = new Date(rawDate);
                     if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                    else dateStr = rawDate.toUpperCase();
                 } catch(e) {}
 
-                // Calculate absolute run deviation for insight
                 const projMargin = parseFloat(projHome) - parseFloat(projAway);
                 const actMargin = parseFloat(actHome) - parseFloat(actAway);
                 const dev = Math.abs(actMargin - projMargin).toFixed(1);
 
                 let insight = `Model Deviation: ±${dev} runs. Calibration status recorded in Block B.`;
-
                 return { away, home, projAway: parseFloat(projAway).toFixed(1), projHome: parseFloat(projHome).toFixed(1), actAway, actHome, insight, date: dateStr };
             });
         }
@@ -574,7 +585,7 @@
             
             if(games.length === 0) return;
             
-            dateLabel.innerText = games[0].date;
+            dateLabel.innerText = "Game Finished: " + games[0].date;
             grid.innerHTML = ''; 
 
             games.forEach(game => {
@@ -609,20 +620,107 @@
         }
 
         // ==========================================
+        // PERFORMANCE METRICS (AUTO-FETCH DYNAMIC)
+        // ==========================================
+        function getDefaultPerfData() {
+            return {
+                record: "45-32", winPct: "58.4%", avgDev: "± 1.25", brier: "Pass",
+                winLabels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                winData: [52, 54, 55.5, 54.2, 57, 58.1, 58.4],
+                devLabels: ['0-1 Runs', '1-2 Runs', '2-3 Runs', '3-4 Runs', '4+ Runs'],
+                devData: [42, 25, 12, 5, 2]
+            };
+        }
+
+        async function fetchPerformanceCSV() {
+            try {
+                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
+                const response = await fetch('data/performance_metrics.csv');
+                if (!response.ok) throw new Error("performance_metrics.csv not found.");
+                const text = await response.text();
+                perfDataCache = parsePerformanceCSV(text);
+                updatePerformanceDOM(perfDataCache);
+            } catch (error) {
+                console.log("Awaiting dynamic performance feed:", error.message);
+                perfDataCache = getDefaultPerfData();
+                updatePerformanceDOM(perfDataCache);
+            }
+        }
+
+        function parsePerformanceCSV(text) {
+            const rows = csvToArray(text);
+            let data = getDefaultPerfData(); // Start with defaults to prevent visual collapse
+            
+            if (rows.length < 2) return data;
+            const headers = rows[0].map(h => h ? h.trim().toLowerCase() : "");
+            
+            // Extract top level KPIs from the most recent row
+            const lastRow = rows[rows.length - 1];
+            let foundKPIs = false;
+            headers.forEach((h, i) => {
+                let val = lastRow[i] ? lastRow[i].trim() : "";
+                if (!val) return;
+                if (h.includes('record')) { data.record = val; foundKPIs = true; }
+                if (h.includes('win') && h.includes('pct')) { data.winPct = val; foundKPIs = true; }
+                if (h.includes('dev') || h.includes('avg')) { data.avgDev = val; foundKPIs = true; }
+                if (h.includes('brier')) { data.brier = val; foundKPIs = true; }
+            });
+
+            // Attempt to dynamically map chart arrays if it is a time-series CSV
+            if (rows.length > 2 && headers.includes('week')) {
+                let tempLabels = [], tempWinData = [];
+                rows.slice(1).forEach(row => {
+                    let rowObj = {};
+                    headers.forEach((h, i) => rowObj[h] = row[i] ? row[i].trim() : "");
+                    
+                    let dateLabel = rowObj['week'] || rowObj['date'] || 'N/A';
+                    let winAcc = rowObj['win_accuracy'] || rowObj['model_accuracy'] || rowObj['win_pct'] || null;
+                    if (winAcc) {
+                        tempLabels.push(dateLabel);
+                        tempWinData.push(parseFloat(winAcc.replace('%','')));
+                    }
+                });
+                if (tempWinData.length > 0) {
+                    data.winLabels = tempLabels;
+                    data.winData = tempWinData;
+                }
+            }
+            return data;
+        }
+
+        function updatePerformanceDOM(data) {
+            document.getElementById('perf-record').innerText = data.record;
+            document.getElementById('perf-winpct').innerText = data.winPct.includes('%') ? data.winPct : data.winPct + '%';
+            document.getElementById('perf-avgdev').innerText = data.avgDev.includes('±') ? data.avgDev : '± ' + data.avgDev;
+            document.getElementById('perf-brier').innerText = data.brier;
+            
+            // If the view is already active, re-render charts immediately
+            const activeView = document.getElementById('view-performance');
+            if (activeView && activeView.classList.contains('active')) {
+                renderCharts(data);
+                window.chartsRendered = true;
+            }
+        }
+
+        // ==========================================
         // PERFORMANCE CHARTING LOGIC
         // ==========================================
-        function renderCharts() {
+        let winChartInstance = null;
+        let devChartInstance = null;
+
+        function renderCharts(data) {
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.font.family = "'JetBrains Mono', monospace";
             
+            if (winChartInstance) winChartInstance.destroy();
             const ctxWin = document.getElementById('winChart').getContext('2d');
-            new Chart(ctxWin, {
+            winChartInstance = new Chart(ctxWin, {
                 type: 'line',
                 data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                    labels: data.winLabels,
                     datasets: [{
                         label: 'Model Accuracy (%)',
-                        data: [52, 54, 55.5, 54.2, 57, 58.1, 58.4],
+                        data: data.winData,
                         borderColor: '#00f5ff',
                         backgroundColor: 'rgba(0, 245, 255, 0.1)',
                         borderWidth: 2,
@@ -643,14 +741,15 @@
                 }
             });
 
+            if (devChartInstance) devChartInstance.destroy();
             const ctxDev = document.getElementById('devChart').getContext('2d');
-            new Chart(ctxDev, {
+            devChartInstance = new Chart(ctxDev, {
                 type: 'bar',
                 data: {
-                    labels: ['0-1 Runs', '1-2 Runs', '2-3 Runs', '3-4 Runs', '4+ Runs'],
+                    labels: data.devLabels,
                     datasets: [{
                         label: 'Frequency',
-                        data: [42, 25, 12, 5, 2],
+                        data: data.devData,
                         backgroundColor: '#ef4444',
                         borderRadius: 4
                     }]
@@ -671,6 +770,7 @@
             showView('overview');
             fetchForecastCSV(); 
             fetchResultsCSV(); 
+            fetchPerformanceCSV();
 
             // Safely execute math rendering once the DOM is fully loaded and ready
             if (typeof renderMathInElement === 'function') {
