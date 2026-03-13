@@ -160,7 +160,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('overview')">
                 <div class="orb-glow" style="transform: scale(0.4); transform-origin: left center; width: 40px; height: 40px; margin-right: -15px;"></div>
-                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.3.6</span></span>
+                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.3.5</span></span>
             </div>
             <div class="flex flex-wrap justify-center gap-4 md:space-x-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
                 <span id="btn-overview" class="cursor-pointer hover:text-white transition" onclick="showView('overview')">Overview</span>
@@ -176,7 +176,6 @@
         
         <!-- 1. OVERVIEW VIEW -->
         <section id="view-overview" class="view-section active py-12 md:py-24">
-            <!-- (unchanged - exact copy from your file) -->
             <div class="max-w-4xl">
                 <div class="flex items-center space-x-3 mb-6 md:mb-8">
                     <span class="h-[1px] w-8 md:w-12 bg-cyan-500"></span>
@@ -198,41 +197,205 @@
                 </div>
             </div>
 
-            <!-- Methodology Grid (unchanged) -->
+            <!-- Methodology Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-20 border-t border-gray-900 pt-16">
-                <!-- Logic 01, 02, 03 - exact copy from your file -->
-                <!-- ... (all three cards unchanged) ... -->
+                <!-- Logic 01 -->
+                <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
+                    <div>
+                        <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 01 • Hitting</div>
+                        <h3 class="text-lg md:text-xl font-bold uppercase mb-3 tracking-tight text-white">Throughput</h3>
+                        <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Treating lineups as service queues. Runners are processed into scores or abandoned in the queue (LOB). Uses M/M/c steady-state probability logic to predict systemic scoring efficiency.</p>
+                    </div>
+                    <div class="math-container text-sm">
+                        $$P_0 = \left[ \sum_{n=0}^{c-1} \frac{(c\rho)^n}{n!} + \frac{(c\rho)^c}{c!(1-\rho)} \right]^{-1}$$
+                    </div>
+                </div>
+                <!-- Logic 02 -->
+                <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
+                    <div>
+                        <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 02 • Pitching</div>
+                        <h3 class="text-lg md:text-xl font-bold uppercase mb-3 tracking-tight text-white">Capacity</h3>
+                        <p class="text-gray-500 text-xs md:text-sm leading-relaxed">The bullpen is a bandwidth-constrained system. We apply Erlang-C integration to calculate the exact probability of an irreversible "System Blowout" based on latency variables.</p>
+                    </div>
+                    <div class="math-container text-sm">
+                        $$P_W = \frac{\frac{A^c}{c!} \frac{c}{c-A}}{\sum_{i=0}^{c-1} \frac{A^i}{i!} + \frac{A^c}{c!} \frac{c}{c-A}}$$
+                    </div>
+                </div>
+                <!-- Logic 03 -->
+                <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
+                    <div>
+                        <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 03 • The Model</div>
+                        <h3 class="text-lg md:text-xl font-bold uppercase mb-3 tracking-tight text-white">Blender</h3>
+                        <p class="text-gray-500 text-xs md:text-sm leading-relaxed">Dynamic Stacking via Bayesian Model Averaging (BMA). Blends high-fidelity Statcast metrics for rookies with deep Bayesian priors for veterans to achieve ultimate posterior convergence.</p>
+                    </div>
+                    <div class="math-container text-sm">
+                        $$P_{final} = \sum_{k=1}^{K} \omega_k \int P_k(y| \theta_k) P(\theta_k) d\theta_k$$
+                    </div>
+                </div>
             </div>
 
-            <!-- Compliance (unchanged) -->
+            <!-- Compliance -->
             <section class="mt-20 p-8 md:p-12 bg-red-950/10 border border-red-900/30 rounded-sm compliance-accent">
-                <!-- exact copy from your file -->
+                <div class="flex flex-col md:flex-row items-start gap-8 md:gap-12">
+                    <div class="w-full md:w-1/3">
+                        <h2 class="text-2xl md:text-3xl font-black uppercase tracking-tighter text-red-500 mb-4">No-Wager <br>Compliance</h2>
+                        <div class="h-1 w-12 bg-red-500"></div>
+                    </div>
+                    <div class="w-full md:w-2/3 space-y-4">
+                        <p class="text-gray-300 font-bold uppercase text-[10px] md:text-xs tracking-widest leading-relaxed">
+                            Machine Learning Ball is a quantitative research firm specializing in stochastic system modeling. We do not provide financial advice, betting recommendations, or gambling consulting.
+                        </p>
+                        <p class="text-gray-500 text-[10px] md:text-xs leading-relaxed">
+                            All published probabilities ($P$) and system indices are proprietary mathematical outputs intended for academic study and system analysis. The use of Machine Learning Ball intelligence to facilitate wagering activities is strictly prohibited by our internal governance lock.
+                        </p>
+                    </div>
+                </div>
             </section>
         </section>
 
-        <!-- 2. FORECASTS VIEW (unchanged HTML structure) -->
+        <!-- 2. FORECASTS VIEW -->
         <section id="view-forecasts" class="view-section py-16 md:py-24">
-            <!-- exact copy from your file -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Live Forecast <span class="cyan-text">Registry</span></h2>
+                    <p id="forecast-date" class="mono text-sm text-gray-400 mt-2 uppercase">Awaiting Canonical Data Feed...</p>
+                </div>
+                <div class="px-5 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-sm text-cyan-400 mono text-xs uppercase tracking-widest">
+                    Block A • Production Runner
+                </div>
+            </div>
+
+            <!-- Dynamic Grid (Auto-populated by CSV) -->
+            <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Fallback Loading/Idle State -->
+                <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-forecast-state">
+                    <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
+                    <p class="text-[10px] text-gray-600 font-mono uppercase tracking-[0.2em]">Automated connection established. Awaiting forecast.csv propagation.</p>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <p class="mono text-[10px] text-gray-500 uppercase tracking-widest">All outputs are proprietary stochastic projections • Statistics-only</p>
+            </div>
         </section>
 
-        <!-- 3. DAILY RESULTS VIEW (unchanged HTML structure) -->
+        <!-- 3. DAILY RESULTS VIEW -->
         <section id="view-daily-results" class="view-section py-16 md:py-24">
-            <!-- exact copy from your file -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Previous Slate <span class="cyan-text">Output</span></h2>
+                    <p id="results-date" class="mono text-sm text-gray-400 mt-2 uppercase">Awaiting Reconciliation Feed...</p>
+                </div>
+                <div class="px-5 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-sm text-cyan-400 mono text-xs uppercase tracking-widest">
+                    Block B • Daily Audit
+                </div>
+            </div>
+
+            <!-- Dynamic Grid (Auto-populated by CSV) -->
+            <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-results-state">
+                    <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
+                    <p class="text-[10px] text-gray-600 font-mono uppercase tracking-[0.2em]">Awaiting previous slate reconciliation data...</p>
+                </div>
+            </div>
         </section>
 
-        <!-- 4. PERFORMANCE VIEW (unchanged HTML structure - KPIs will update live) -->
+        <!-- 4. PERFORMANCE VIEW (Charts) -->
         <section id="view-performance" class="view-section py-16 md:py-24">
-            <!-- exact copy from your file -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Model <span class="cyan-text">Calibration</span></h2>
+                    <p class="mono text-sm text-gray-400 mt-2 uppercase">Cumulative System Variance Tracking</p>
+                </div>
+                <div class="px-5 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-sm text-cyan-400 mono text-xs uppercase tracking-widest">
+                    Block C • Macro Performance Auditing
+                </div>
+            </div>
+
+            <!-- KPI Dashboard -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Season Record</div>
+                    <div class="text-3xl font-black text-white">45-32</div>
+                </div>
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Win %</div>
+                    <div class="text-3xl font-black text-white">58.4%</div>
+                </div>
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Avg Score Deviation</div>
+                    <div class="text-3xl font-black text-white">± 1.25</div>
+                </div>
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Brier Score Audited</div>
+                    <div class="text-3xl font-black text-emerald-400">Pass</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Win Probability Alignment -->
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-xs text-cyan-500 uppercase tracking-widest mb-6">Cumulative Win Prob Alignment</div>
+                    <canvas id="winChart" height="200"></canvas>
+                </div>
+                
+                <!-- Chart 2: Score Deviation Density -->
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
+                    <div class="mono text-xs text-cyan-500 uppercase tracking-widest mb-6">Score Deviation Variance (Runs)</div>
+                    <canvas id="devChart" height="200"></canvas>
+                </div>
+            </div>
         </section>
 
-        <!-- 5. PLAYER MODELS (unchanged) -->
+        <!-- 5. PLAYER MODELS (Coming Soon) -->
         <section id="view-players" class="view-section py-24 md:py-32 text-center">
-            <!-- exact copy from your file -->
+            <div class="inline-block relative">
+                <div class="orb-glow mx-auto mb-10" style="transform: scale(1.5);"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-cyan-500/20 rounded-full animate-ping"></div>
+            </div>
+            
+            <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white mb-6">Node <span class="cyan-text">Locked</span></h2>
+            <p class="text-gray-400 font-mono text-sm md:text-md uppercase tracking-[0.2em] mb-8">Hitter & Pitcher Sub-Models Scheduled for v4.0 Integration</p>
+            
+            <div class="max-w-md mx-auto border border-gray-800 bg-black/40 p-6 rounded-sm">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-4">
+                    <span class="mono text-[10px] text-gray-500 uppercase">Status</span>
+                    <span class="mono text-[10px] text-yellow-500 uppercase font-bold">In Research & Backtesting</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="mono text-[10px] text-gray-500 uppercase">Target Release</span>
+                    <span class="mono text-[10px] text-cyan-500 uppercase font-bold">Post-Launch Window</span>
+                </div>
+            </div>
         </section>
 
-        <!-- FOOTER (unchanged) -->
+        <!-- FOOTER -->
         <footer class="mt-20 md:mt-32 pt-12 md:pt-16 border-t border-gray-900 flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
-            <!-- exact copy from your file -->
+            <div class="space-y-4">
+                <div>
+                    <span class="text-xl md:text-2xl font-black tracking-tighter uppercase text-white block">Machine Learning <span class="cyan-text">Ball</span></span>
+                    <p class="text-gray-600 text-[9px] md:text-[10px] mt-1 uppercase tracking-[0.2em]">Institutional Intelligence Registry</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="https://x.com/MLBallForecast" target="_blank" class="social-btn flex items-center justify-center space-x-2 px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        <span>Follow @MLBallForecast</span>
+                    </a>
+                    <a href="mailto:mlballforecast@gmail.com" class="social-btn flex items-center justify-center space-x-2 px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Contact HQ</span>
+                    </a>
+                </div>
+            </div>
+            <div class="text-left md:text-right space-y-2">
+                <div class="mono text-[9px] text-gray-700 uppercase tracking-widest">
+                    &copy; 2026 MACHINE LEARNING BALL // CANONICAL SOURCE
+                </div>
+                <div class="text-[9px] text-gray-800 uppercase tracking-tighter italic">
+                    Proprietary Stack v3.3.5 • Statistics Only
+                </div>
+            </div>
         </footer>
     </main>
 
@@ -256,70 +419,78 @@
             }
         }
 
-        // FORECASTS - MATCHES YOUR CSV
+        // ==========================================
+        // FORECASTS (AUTO-FETCH ONLY)
+        // ==========================================
         async function fetchForecastCSV() {
             const grid = document.getElementById('games-grid');
             try {
+                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
+                
                 const response = await fetch('data/forecast.csv');
-                if (!response.ok) throw new Error("forecast.csv not found");
+                if (!response.ok) throw new Error("forecast.csv not found.");
+                
                 const text = await response.text();
                 const data = parseForecastCSV(text);
                 renderGames(data);
             } catch (error) {
-                console.log(error);
+                console.log("Awaiting forecast canonical data feed:", error.message);
             }
         }
 
         function parseForecastCSV(text) {
-            const lines = text.split(/\r?\n/).filter(l => l.trim());
+            const lines = text.split(/\r?\n/);
             if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim());
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
             
-            return lines.slice(1).map(line => {
-                const values = line.split(',').map(v => v.trim());
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',').map(v => v.trim()); 
                 let obj = {};
                 headers.forEach((h, i) => obj[h] = values[i]);
 
-                const away = obj.Away || "AWAY";
-                const home = obj.Home || "HOME";
-                let winProb = parseFloat(obj.WinProb || 0.5) * 100;
-                const predicted = obj["Predicted_Score"] || "";
-                const parts = predicted.split(' — ');
-                const awayScore = parts[0] ? parts[0].replace(/[^0-9.]/g,'') : "0.0";
-                const homeScore = parts[1] ? parts[1].replace(/[^0-9.]/g,'') : "0.0";
+                const away = obj.away_team || obj.away || "AWAY";
+                const home = obj.home_team || obj.home || "HOME";
+                const awayScore = obj.away_rpg_blend || obj.awayscore || "0.0";
+                const homeScore = obj.home_rpg_blend || obj.homescore || "0.0";
+                
+                let winProb = obj.p_home_final || obj.winprob || "50.0";
+                if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
-                let insight = obj.Confidence === "Too-Uncertain" 
-                    ? "Model signals low-confidence convergence. Institutional caution advised." 
-                    : "Standard queue pressure. Reliability level NORMAL.";
+                let rawDate = obj.game_day_ct || obj.date || new Date().toISOString();
+                let dateStr = new Date().toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                try {
+                    const d = new Date(rawDate);
+                    if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                } catch(e) {}
 
-                return { 
-                    away, home, 
-                    awayScore: parseFloat(awayScore).toFixed(1), 
-                    homeScore: parseFloat(homeScore).toFixed(1), 
-                    winProb: winProb.toFixed(1), 
-                    insight, 
-                    date: "MARCH 2026", 
-                    volatile: false 
-                };
+                let insight = obj.insight || "";
+                if (!insight) {
+                    if (obj.volatile_flag === "TRUE") insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
+                    else if (obj.confidence_tag === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
+                    else insight = `Standard queue pressure. Reliability level NORMAL.`;
+                }
+                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: dateStr, volatile: obj.volatile_flag === "TRUE" };
             });
         }
 
         function renderGames(games) {
             const grid = document.getElementById('games-grid');
             const dateLabel = document.getElementById('forecast-date');
-            if (games.length === 0) return;
+            if(games.length === 0) return;
             dateLabel.innerText = games[0].date;
-            grid.innerHTML = '';
+            grid.innerHTML = ''; 
+
             games.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div class="orb-glow"></div>
-                        <div class="node-tag">NODE 3.3.6</div>
+                        <div class="node-tag">NODE 3.3.5</div>
                     </div>
                     <div class="matchup-web">${game.away} @ ${game.home}</div>
                     <div class="date-web">${game.date}</div>
+                    
                     <div class="metrics-row">
                         <div class="metric-block">
                             <div class="metric-label">Projected Throughput</div>
@@ -330,7 +501,9 @@
                             <div class="metric-value">${game.winProb}%</div>
                         </div>
                     </div>
+                    
                     <div class="insight-container mt-4">
+                        ${game.volatile ? '<div class="volatile-tag">VOLATILE</div>' : ''}
                         <div class="insight-label">Service System Insight</div>
                         <div class="insight-web">${game.insight}</div>
                     </div>
@@ -339,54 +512,74 @@
             });
         }
 
-        // DAILY RESULTS - MATCHES YOUR CSV
+        // ==========================================
+        // DAILY RESULTS (AUTO-FETCH ONLY)
+        // ==========================================
         async function fetchResultsCSV() {
-            const grid = document.getElementById('results-grid');
             try {
+                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
+                
                 const response = await fetch('data/results.csv');
-                if (!response.ok) throw new Error("results.csv not found");
+                if (!response.ok) throw new Error("results.csv not found.");
+                
                 const text = await response.text();
                 const data = parseResultsCSV(text);
                 renderResultGames(data);
             } catch (error) {
-                console.log(error);
+                console.log("Awaiting daily results feed:", error.message);
             }
         }
 
         function parseResultsCSV(text) {
-            const lines = text.split(/\r?\n/).filter(l => l.trim());
+            const lines = text.split(/\r?\n/);
             if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim());
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
             
-            return lines.slice(1).map(line => {
-                const values = line.split(',').map(v => v.trim());
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',').map(v => v.trim()); 
                 let obj = {};
                 headers.forEach((h, i) => obj[h] = values[i]);
 
-                const away = obj.away_team || "AWAY";
-                const home = obj.home_team || "HOME";
-                const actAway = obj.away_runs || obj.actual_away || "0";
-                const actHome = obj.home_runs || obj.actual_home || "0";
+                const away = obj.away_team || obj.away || "AWAY";
+                const home = obj.home_team || obj.home || "HOME";
+                
+                const projAway = obj.away_rpg_blend || obj.proj_away || "0.0";
+                const projHome = obj.home_rpg_blend || obj.proj_home || "0.0";
+                
+                // Flexible mapping for actual scores
+                const actAway = obj.actual_away || obj.away_final || obj.away_score || "0";
+                const actHome = obj.actual_home || obj.home_final || obj.home_score || "0";
 
-                return {
-                    away, home,
-                    projAway: "TBD", projHome: "TBD",
-                    actAway, actHome,
-                    insight: `Model Deviation recorded in Block B`,
-                    date: "PREVIOUS SLATE"
-                };
+                let rawDate = obj.game_day_ct || obj.date || new Date().toISOString();
+                let dateStr = "PREVIOUS SLATE";
+                try {
+                    const d = new Date(rawDate);
+                    if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
+                } catch(e) {}
+
+                // Calculate absolute run deviation for insight
+                const projMargin = parseFloat(projHome) - parseFloat(projAway);
+                const actMargin = parseFloat(actHome) - parseFloat(actAway);
+                const dev = Math.abs(actMargin - projMargin).toFixed(1);
+
+                let insight = `Model Deviation: ±${dev} runs. Calibration status recorded in Block B.`;
+
+                return { away, home, projAway: parseFloat(projAway).toFixed(1), projHome: parseFloat(projHome).toFixed(1), actAway, actHome, insight, date: dateStr };
             });
         }
 
         function renderResultGames(games) {
             const grid = document.getElementById('results-grid');
             const dateLabel = document.getElementById('results-date');
-            if (games.length === 0) return;
+            
+            if(games.length === 0) return;
+            
             dateLabel.innerText = games[0].date;
-            grid.innerHTML = '';
+            grid.innerHTML = ''; 
+
             games.forEach(game => {
                 const card = document.createElement('div');
-                card.className = 'game-card';
+                card.className = 'game-card'; 
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div class="orb-glow"></div>
@@ -394,6 +587,7 @@
                     </div>
                     <div class="matchup-web">${game.away} @ ${game.home}</div>
                     <div class="date-web">${game.date}</div>
+                    
                     <div class="metrics-row">
                         <div class="metric-block">
                             <div class="metric-label">Projected</div>
@@ -404,6 +598,7 @@
                             <div class="metric-value text-white">${game.actAway} – ${game.actHome}</div>
                         </div>
                     </div>
+                    
                     <div class="insight-container mt-4">
                         <div class="insight-label">Reconciliation Data</div>
                         <div class="insight-web">${game.insight}</div>
@@ -413,56 +608,77 @@
             });
         }
 
-        // PERFORMANCE - NOW LIVE FROM CSV
-        async function fetchPerformanceCSV() {
-            try {
-                const response = await fetch('data/performance_metrics.csv');
-                if (!response.ok) return;
-                const text = await response.text();
-                const data = parsePerformanceCSV(text);
-                updatePerformanceKPIs(data);
-            } catch (e) {}
-        }
-
-        function parsePerformanceCSV(text) {
-            const lines = text.split(/\r?\n/).filter(l => l.trim());
-            if (lines.length < 2) return [];
-            return lines.slice(1).map(line => {
-                const cols = line.split(',').map(c => c.trim());
-                return { winPct: (parseFloat(cols[1] || 0.584) * 100).toFixed(1) + "%" };
-            });
-        }
-
-        function updatePerformanceKPIs(data) {
-            if (!data.length) return;
-            const winEl = document.querySelector('#view-performance .text-3xl.font-black:nth-of-type(2)');
-            if (winEl) winEl.textContent = data[data.length-1].winPct;
-        }
-
-        // CHARTS (unchanged)
+        // ==========================================
+        // PERFORMANCE CHARTING LOGIC
+        // ==========================================
         function renderCharts() {
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.font.family = "'JetBrains Mono', monospace";
             
             const ctxWin = document.getElementById('winChart').getContext('2d');
-            new Chart(ctxWin, { /* your original chart code unchanged */ 
-                type: 'line', data: { labels: ['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6','Week 7'], datasets: [{ label: 'Model Accuracy (%)', data: [52,54,55.5,54.2,57,58.1,58.4], borderColor: '#00f5ff', backgroundColor: 'rgba(0, 245, 255, 0.1)', borderWidth: 2, tension: 0.3, fill: true }] }, options: { responsive: true, scales: { y: { min: 45, max: 65 } }, plugins: { legend: { display: false } } } });
-            
+            new Chart(ctxWin, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
+                    datasets: [{
+                        label: 'Model Accuracy (%)',
+                        data: [52, 54, 55.5, 54.2, 57, 58.1, 58.4],
+                        borderColor: '#00f5ff',
+                        backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#0a0e1a',
+                        pointBorderColor: '#00f5ff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { min: 45, max: 65, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
             const ctxDev = document.getElementById('devChart').getContext('2d');
-            new Chart(ctxDev, { /* your original bar chart unchanged */ 
-                type: 'bar', data: { labels: ['0-1 Runs','1-2 Runs','2-3 Runs','3-4 Runs','4+ Runs'], datasets: [{ label: 'Frequency', data: [42,25,12,5,2], backgroundColor: '#ef4444' }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
+            new Chart(ctxDev, {
+                type: 'bar',
+                data: {
+                    labels: ['0-1 Runs', '1-2 Runs', '2-3 Runs', '3-4 Runs', '4+ Runs'],
+                    datasets: [{
+                        label: 'Frequency',
+                        data: [42, 25, 12, 5, 2],
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
 
         // Init
         window.onload = () => {
             showView('overview');
-            fetchForecastCSV();
-            fetchResultsCSV();
-            fetchPerformanceCSV();
+            fetchForecastCSV(); 
+            fetchResultsCSV(); 
 
+            // Safely execute math rendering once the DOM is fully loaded and ready
             if (typeof renderMathInElement === 'function') {
                 renderMathInElement(document.body, {
-                    delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
                 });
             }
         };
