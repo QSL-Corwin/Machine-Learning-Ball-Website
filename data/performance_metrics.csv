@@ -1,0 +1,5 @@
+date	overall_win_rate	high_conf_win_rate	brier_mean	games_processed
+2026-03-05	0.583	0.667	0.218	12
+2026-03-06	0.571	0.625	0.224	14
+2026-03-07	0.562	0.6	0.231	16
+2026-03-13	0.55	0.583	0.239	20
