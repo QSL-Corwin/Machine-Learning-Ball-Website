@@ -427,7 +427,7 @@
             try {
                 if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
                 
-                const response = await fetch('forecast.csv');
+                const response = await fetch('data/forecast.csv');
                 if (!response.ok) throw new Error("forecast.csv not found.");
                 
                 const text = await response.text();
@@ -519,7 +519,7 @@
             try {
                 if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
                 
-                const response = await fetch('results.csv');
+                const response = await fetch('data/results.csv');
                 if (!response.ok) throw new Error("results.csv not found.");
                 
                 const text = await response.text();
