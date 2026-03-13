@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -466,13 +466,27 @@
 
                 const away = obj.away_team || obj.away || "AWAY";
                 const home = obj.home_team || obj.home || "HOME";
-                const awayScore = obj.away_rpg_blend || obj.awayscore || "0.0";
-                const homeScore = obj.home_rpg_blend || obj.homescore || "0.0";
+                
+                let awayScore = "0.0";
+                let homeScore = "0.0";
+                
+                // Extract numeric throughputs from the "Predicted_Score" string (e.g. "White Sox 4 — Giants 5")
+                if (obj.predicted_score) {
+                    const scores = obj.predicted_score.match(/(\d+\.?\d*)/g);
+                    if (scores && scores.length >= 2) {
+                        awayScore = parseFloat(scores[0]).toFixed(1);
+                        homeScore = parseFloat(scores[1]).toFixed(1);
+                    }
+                } else {
+                    awayScore = parseFloat(obj.away_rpg_blend || obj.awayscore || "0").toFixed(1);
+                    homeScore = parseFloat(obj.home_rpg_blend || obj.homescore || "0").toFixed(1);
+                }
                 
                 let winProb = obj.p_home_final || obj.winprob || "50.0";
                 if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
-                let rawDate = obj.game_day_ct || obj.date || new Date().toISOString();
+                // Check for new "Start (CT)" column header
+                let rawDate = obj['start (ct)'] || obj.game_day_ct || obj.date || new Date().toISOString();
                 let dateStr = "TBD";
                 try {
                     const d = new Date(rawDate);
@@ -482,11 +496,26 @@
 
                 let insight = obj.insight || "";
                 if (!insight) {
-                    if (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1") insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
-                    else if (obj.confidence_tag === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
-                    else insight = `Standard queue pressure. Reliability level NORMAL.`;
+                    // Update to reference the new CSV "Confidence" column mapping
+                    if (obj.confidence === "Too-Uncertain" || obj.confidence_tag === "Too-Uncertain") {
+                        insight = "Model signals low-confidence convergence. Institutional caution advised.";
+                    } else if (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1") {
+                        insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
+                    } else {
+                        insight = `Standard queue pressure. Reliability level NORMAL.`;
+                    }
                 }
-                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: dateStr, volatile: (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1") };
+                
+                return { 
+                    away, 
+                    home, 
+                    awayScore, 
+                    homeScore, 
+                    winProb, 
+                    insight, 
+                    date: dateStr, 
+                    volatile: (obj.volatile_flag === "TRUE" || obj.volatile_flag === "1" || obj.confidence === "Too-Uncertain") 
+                };
             });
         }
 
