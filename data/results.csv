@@ -1,0 +1,6 @@
+game_id	away_team	home_team	away_runs	home_runs	actual_winner	status	pick_correct_final	brier_score
+20260313001	Chicago Cubs	New York Yankees	4	5	Yankees	Completed	1	0.18
+20260313002	Los Angeles Dodgers	Boston Red Sox	3	2	Dodgers	Completed	1	0.09
+20260313003	Atlanta Braves	Philadelphia Phillies	6	4	Braves	Completed	0	0.36
+20260313004	Houston Astros	Texas Rangers	2	3	Rangers	Completed	1	0.25
+20260313005	Milwaukee Brewers	St. Louis Cardinals	1	1	None	Completed	0	0.5
