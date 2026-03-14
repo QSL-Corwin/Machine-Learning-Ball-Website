@@ -400,13 +400,13 @@
 
     <script>
         // ==========================================
-        // ROBUST CSV PARSER (Fix for Empty Lines, BOM & Quotes)
+        // ROBUST CSV PARSER 
         // ==========================================
         function csvToArray(text) {
             let lines = text.split(/\r?\n/);
             let result = [];
             lines.forEach(line => {
-                if (!line.trim()) return; // strictly ignore blank lines
+                if (!line.trim()) return; 
                 let row = [];
                 let current = '';
                 let inQuotes = false;
@@ -455,12 +455,12 @@
         }
 
         // ==========================================
-        // FORECASTS (AUTO-FETCH)
+        // FORECASTS TAB
         // ==========================================
         async function fetchForecastCSV() {
             try {
-                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
-                const response = await fetch('data/forecast.csv');
+                // Modified fetch path from 'data/forecast.csv' to 'forecast.csv' 
+                const response = await fetch('forecast.csv');
                 if (!response.ok) throw new Error("forecast.csv not found.");
                 const text = await response.text();
                 const data = parseForecastCSV(text);
@@ -474,59 +474,40 @@
             const rows = csvToArray(text);
             if (rows.length < 2) return [];
             
-            // The first non-empty row is our headers. Strip BOM (\uFEFF) to guarantee exact matching.
             const headers = rows[0].map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
             
             return rows.slice(1).map(values => {
                 let obj = {};
                 headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
 
-                const away = obj.away_team || obj.away || "AWAY";
-                const home = obj.home_team || obj.home || "HOME";
+                // Directly mapping specific headers from forecast.csv
+                const away = obj.away || "AWAY";
+                const home = obj.home || "HOME";
                 
                 let awayScore = "0.0";
                 let homeScore = "0.0";
                 
-                // Extract numeric throughputs from the "Predicted_Score" string (e.g. "White Sox 4 — Giants 5")
                 if (obj.predicted_score) {
                     const scores = obj.predicted_score.match(/(\d+\.?\d*)/g);
                     if (scores && scores.length >= 2) {
                         awayScore = parseFloat(scores[0]).toFixed(1);
                         homeScore = parseFloat(scores[1]).toFixed(1);
                     }
-                } else {
-                    awayScore = parseFloat(obj.away_rpg_blend || obj.awayscore || "0").toFixed(1);
-                    homeScore = parseFloat(obj.home_rpg_blend || obj.homescore || "0").toFixed(1);
-                }
+                } 
                 
-                let winProb = obj.p_home_final || obj.winprob || "50.0";
+                let winProb = obj.winprob || "50.0";
                 if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
-                // Robust Date parsing avoiding Browser NaN errors
-                let rawDate = obj['start (ct)'] || obj.game_day_ct || obj.date || "";
-                let dateStr = "TBD";
-                if (rawDate) {
-                    dateStr = rawDate.toUpperCase();
-                    // Extract just the date part if it looks like YYYY-MM-DD
-                    const dateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
-                    if (dateMatch) {
-                        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                        dateStr = `${months[parseInt(dateMatch[2])-1]} ${dateMatch[3]}, ${dateMatch[1]}`;
-                    }
-                }
+                let dateStr = obj['start (ct)'] || "TBD";
 
-                let insight = obj.insight || "";
-                if (!insight) {
-                    const conf = (obj.confidence || obj.confidence_tag || "").toLowerCase();
-                    const vol = (obj.volatile_flag || "").toLowerCase();
-                    
-                    if (conf === "too-uncertain") {
-                        insight = "Model signals low-confidence convergence. Institutional caution advised.";
-                    } else if (vol === "true" || vol === "1") {
-                        insight = "Elevated stochastic variance detected. High-volatility throughput expected.";
-                    } else {
-                        insight = `Standard queue pressure. Reliability level NORMAL.`;
-                    }
+                let insight = "";
+                const conf = (obj.confidence || "").toLowerCase();
+                const vol = (conf === "too-uncertain");
+                
+                if (vol) {
+                    insight = "Model signals low-confidence convergence. Institutional caution advised.";
+                } else {
+                    insight = `Queue Analysis: Target Pick -> ${obj.pick || 'None'} | Model -> ${obj.model || 'QT'}`;
                 }
                 
                 return { 
@@ -537,7 +518,7 @@
                     winProb, 
                     insight, 
                     date: dateStr, 
-                    volatile: (insight.includes("High-volatility") || insight.includes("low-confidence"))
+                    volatile: vol
                 };
             });
         }
@@ -583,12 +564,12 @@
         }
 
         // ==========================================
-        // DAILY RESULTS (AUTO-FETCH)
+        // RESULTS TAB
         // ==========================================
         async function fetchResultsCSV() {
             try {
-                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
-                const response = await fetch('data/results.csv');
+                // Modified fetch path from 'data/results.csv' to 'results.csv' 
+                const response = await fetch('results.csv');
                 if (!response.ok) throw new Error("results.csv not found.");
                 const text = await response.text();
                 const data = parseResultsCSV(text);
@@ -607,51 +588,30 @@
                 let obj = {};
                 headers.forEach((h, i) => obj[h] = values[i] ? values[i].trim() : "");
 
-                const away = obj.away_team || obj.away || "AWAY";
-                const home = obj.home_team || obj.home || "HOME";
+                // Directly mapping headers from results.csv
+                const away = obj.away_team || "AWAY";
+                const home = obj.home_team || "HOME";
                 
-                let projAway = "0.0";
-                let projHome = "0.0";
-                if (obj.predicted_score) {
-                    const scores = obj.predicted_score.match(/(\d+\.?\d*)/g);
-                    if (scores && scores.length >= 2) {
-                        projAway = parseFloat(scores[0]).toFixed(1);
-                        projHome = parseFloat(scores[1]).toFixed(1);
-                    }
-                } else {
-                    projAway = parseFloat(obj.away_rpg_blend || obj.proj_away || "0").toFixed(1);
-                    projHome = parseFloat(obj.home_rpg_blend || obj.proj_home || "0").toFixed(1);
-                }
+                let projAway = "-";
+                let projHome = "-";
 
-                let actAway = "0";
-                let actHome = "0";
-                if (obj.actual_score) {
-                    const scores = obj.actual_score.match(/(\d+\.?\d*)/g);
-                    if (scores && scores.length >= 2) {
-                        actAway = scores[0];
-                        actHome = scores[1];
-                    }
-                } else {
-                    actAway = obj.actual_away || obj.away_final || obj.away_score || "0";
-                    actHome = obj.actual_home || obj.home_final || obj.home_score || "0";
-                }
+                let actAway = obj.away_runs || "0";
+                let actHome = obj.home_runs || "0";
 
-                let rawDate = obj['start (ct)'] || obj.game_day_ct || obj.date || "";
+                let rawDate = obj.game_id || "";
                 let dateStr = "PREVIOUS SLATE";
-                if (rawDate) {
-                    dateStr = rawDate.toUpperCase();
-                    const dateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
-                    if (dateMatch) {
-                        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                        dateStr = `${months[parseInt(dateMatch[2])-1]} ${dateMatch[3]}, ${dateMatch[1]}`;
-                    }
+                
+                // Converting '20260313001' -> 'MAR 13, 2026'
+                if (rawDate.length >= 8) {
+                    const yyyy = rawDate.substring(0,4);
+                    const mm = parseInt(rawDate.substring(4,6));
+                    const dd = rawDate.substring(6,8);
+                    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                    dateStr = `${months[mm-1]} ${dd}, ${yyyy}`;
                 }
 
-                const projMargin = parseFloat(projHome) - parseFloat(projAway);
-                const actMargin = parseFloat(actHome) - parseFloat(actAway);
-                const dev = Math.abs(actMargin - projMargin).toFixed(1);
-
-                let insight = `Model Deviation: ±${dev} runs. Calibration status recorded in Block B.`;
+                let insight = `Winner: ${obj.actual_winner} | Pick Correct: ${obj.pick_correct_final === '1' ? 'YES' : 'NO'} | Brier: ${obj.brier_score}`;
+                
                 return { away, home, projAway, projHome, actAway, actHome, insight, date: dateStr };
             });
         }
@@ -697,22 +657,21 @@
         }
 
         // ==========================================
-        // PERFORMANCE METRICS (AUTO-FETCH DYNAMIC)
+        // PERFORMANCE TAB
         // ==========================================
         function getDefaultPerfData() {
             return {
-                record: "45-32", winPct: "58.4%", avgDev: "± 1.25", brier: "Pass",
-                winLabels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'],
-                winData: [52, 54, 55.5, 54.2, 57, 58.1, 58.4],
+                record: "--", winPct: "--", avgDev: "N/A", brier: "--",
+                winLabels: [], winData: [],
                 devLabels: ['0-1 Runs', '1-2 Runs', '2-3 Runs', '3-4 Runs', '4+ Runs'],
-                devData: [42, 25, 12, 5, 2]
+                devData: [42, 25, 12, 5, 2] // Default aesthetic chart
             };
         }
 
         async function fetchPerformanceCSV() {
             try {
-                if (window.location.protocol === 'file:') throw new Error("Local protocol block.");
-                const response = await fetch('data/performance_metrics.csv');
+                // Modified fetch path from 'data/performance_metrics.csv' to 'performance_metrics.csv' 
+                const response = await fetch('performance_metrics.csv');
                 if (!response.ok) throw new Error("performance_metrics.csv not found.");
                 const text = await response.text();
                 perfDataCache = parsePerformanceCSV(text);
@@ -731,36 +690,37 @@
             if (rows.length < 2) return data;
             const headers = rows[0].map(h => h.trim().toLowerCase().replace(/^\uFEFF/, ''));
             
-            // Extract top level KPIs from the most recent row
+            // Extract top level KPIs from the most recent row in performance_metrics.csv
             const lastRow = rows[rows.length - 1];
-            headers.forEach((h, i) => {
-                let val = lastRow[i] ? lastRow[i].trim() : "";
-                if (!val) return;
-                if (h.includes('record')) { data.record = val; }
-                if (h.includes('win') && h.includes('pct')) { data.winPct = val; }
-                if (h.includes('dev') || h.includes('avg')) { data.avgDev = val; }
-                if (h.includes('brier')) { data.brier = val; }
-            });
-
-            // Attempt to dynamically map chart arrays if it is a time-series CSV
-            if (rows.length > 2 && headers.includes('week')) {
-                let tempLabels = [], tempWinData = [];
-                rows.slice(1).forEach(row => {
-                    let rowObj = {};
-                    headers.forEach((h, i) => rowObj[h] = row[i] ? row[i].trim() : "");
-                    
-                    let dateLabel = rowObj['week'] || rowObj['date'] || 'N/A';
-                    let winAcc = rowObj['win_accuracy'] || rowObj['model_accuracy'] || rowObj['win_pct'] || null;
-                    if (winAcc) {
-                        tempLabels.push(dateLabel);
-                        tempWinData.push(parseFloat(winAcc.replace('%','')));
-                    }
-                });
-                if (tempWinData.length > 0) {
-                    data.winLabels = tempLabels;
-                    data.winData = tempWinData;
+            let lastObj = {};
+            headers.forEach((h, i) => lastObj[h] = lastRow[i] ? lastRow[i].trim() : "");
+            
+            if (lastObj.games_processed) data.record = lastObj.games_processed + " Games";
+            if (lastObj.overall_win_rate) data.winPct = (parseFloat(lastObj.overall_win_rate) * 100).toFixed(1) + "%";
+            if (lastObj.brier_mean) data.brier = lastObj.brier_mean;
+            
+            let tempLabels = [];
+            let tempWinData = [];
+            
+            // Loop through rows to build the chart arrays
+            rows.slice(1).forEach(row => {
+                let rowObj = {};
+                headers.forEach((h, i) => rowObj[h] = row[i] ? row[i].trim() : "");
+                
+                let dateLabel = rowObj['date'];
+                let winAcc = rowObj['overall_win_rate'];
+                
+                if (dateLabel && winAcc) {
+                    tempLabels.push(dateLabel);
+                    tempWinData.push((parseFloat(winAcc) * 100).toFixed(1));
                 }
+            });
+            
+            if (tempWinData.length > 0) {
+                data.winLabels = tempLabels;
+                data.winData = tempWinData;
             }
+            
             return data;
         }
 
@@ -779,7 +739,7 @@
         }
 
         // ==========================================
-        // PERFORMANCE CHARTING LOGIC
+        // CHART LOGIC
         // ==========================================
         let winChartInstance = null;
         let devChartInstance = null;
@@ -810,7 +770,7 @@
                 options: {
                     responsive: true,
                     scales: {
-                        y: { min: 45, max: 65, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' } },
                         x: { grid: { display: false } }
                     },
                     plugins: { legend: { display: false } }
