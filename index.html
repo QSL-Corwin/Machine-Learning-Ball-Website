@@ -439,40 +439,62 @@
             }
         }
 
-        function parseForecastCSV(text) {
-            // Fixes the invisible empty newline bug at the end of CSVs
-            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        function parseCSVHelper(text) {
+            if (text.toLowerCase().includes('<!doctype html>')) return [];
+            
+            // Strip hidden BOM characters, null bytes, and all quotes to guarantee clean headers
+            let cleanText = text.replace(/^\uFEFF/, '').replace(/\0/g, '').replace(/"/g, '');
+            const lines = cleanText.split(/\r\n|\n|\r/).filter(line => line.trim() !== '');
             if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            
+            // Auto-detect if CSV uses tabs or semicolons instead of commas
+            let delimiter = ',';
+            if (lines[0].includes('\t')) delimiter = '\t';
+            else if (lines[0].includes(';')) delimiter = ';';
+            
+            const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
             
             return lines.slice(1).map(line => {
-                const values = line.split(',').map(v => v.trim()); 
+                const values = line.split(delimiter).map(v => v.trim());
                 let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
+                headers.forEach((h, i) => {
+                    obj[h] = values[i] || "";
+                });
+                return obj;
+            });
+        }
 
-                // Matching exactly to your new forecast.csv headers
-                const away = obj['away'] || "AWAY";
-                const home = obj['home'] || "HOME";
+        function parseForecastCSV(text) {
+            const rows = parseCSVHelper(text);
+            return rows.map(obj => {
+                // Expanded fallback names just in case
+                const away = obj['away_team'] || obj['away'] || "AWAY";
+                const home = obj['home_team'] || obj['home'] || "HOME";
                 
                 let awayScore = "0.0", homeScore = "0.0";
-                if (obj['predicted_score']) {
-                    const nums = obj['predicted_score'].match(/\d+/g);
+                let predScore = obj['predicted_score'] || obj['proj_score'] || "";
+                if (predScore) {
+                    const nums = predScore.match(/\d+(\.\d+)?/g);
                     if (nums && nums.length >= 2) {
                         awayScore = nums[0];
                         homeScore = nums[nums.length - 1]; 
                     }
+                } else {
+                    awayScore = obj['away_score'] || obj['away_rpg_blend'] || "0.0";
+                    homeScore = obj['home_score'] || obj['home_rpg_blend'] || "0.0";
                 }
                 
-                let winProb = obj['winprob'] || "50.0";
+                let winProb = obj['winprob'] || obj['win_prob'] || obj['p_home_final'] || "50.0";
                 if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
-                let rawDate = obj['start (ct)'] || new Date().toISOString();
+                let rawDate = obj['start (ct)'] || obj['date'] || obj['game_day_ct'] || new Date().toISOString();
                 
                 let insight = "";
-                if (obj['confidence'] === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
+                const conf = obj['confidence'] || obj['confidence_tag'] || "";
+                if (conf === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
                 else insight = `Standard queue pressure. Reliability level NORMAL.`;
 
-                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: rawDate, volatile: obj['confidence'] === "Too-Uncertain" };
+                return { away, home, awayScore: parseFloat(awayScore).toFixed(1), homeScore: parseFloat(homeScore).toFixed(1), winProb, insight, date: rawDate, volatile: conf === "Too-Uncertain" };
             });
         }
 
@@ -534,23 +556,14 @@
         }
 
         function parseResultsCSV(text) {
-            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-            
-            return lines.slice(1).map(line => {
-                const values = line.split(',').map(v => v.trim()); 
-                let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
-
-                // Map to results.csv column headers
-                const away = obj['away_team'] || "AWAY";
-                const home = obj['home_team'] || "HOME";
-                const actAway = obj['away_runs'] || "0";
-                const actHome = obj['home_runs'] || "0";
+            const rows = parseCSVHelper(text);
+            return rows.map(obj => {
+                const away = obj['away_team'] || obj['away'] || "AWAY";
+                const home = obj['home_team'] || obj['home'] || "HOME";
+                const actAway = obj['away_runs'] || obj['actual_away'] || obj['away_final'] || "0";
+                const actHome = obj['home_runs'] || obj['actual_home'] || obj['home_final'] || "0";
 
                 let dateStr = "PREVIOUS SLATE";
-                // Extracts the date from Game_ID if possible (e.g. 20260313001)
                 if (obj['game_id'] && obj['game_id'].length >= 8) {
                     const year = obj['game_id'].substring(0,4);
                     const month = obj['game_id'].substring(4,6);
@@ -629,18 +642,13 @@
         }
 
         function parsePerformanceCSV(text) {
-            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-            if (lines.length < 2) return null;
-            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const rows = parseCSVHelper(text);
+            if (!rows || rows.length === 0) return null;
             
             let dates = [];
             let winRates = [];
             
-            lines.slice(1).forEach(line => {
-                const values = line.split(',').map(v => v.trim()); 
-                let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
-                
+            rows.forEach(obj => {
                 if (obj['date']) {
                     try {
                         const d = new Date(`${obj['date']}T12:00:00Z`);
