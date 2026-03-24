@@ -4,18 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- X / Twitter Card Meta Tags -->
+    <!-- Canonical Meta Tags for X/Twitter Compliance (v3.6.2 Hardened Meta Block) -->
     <title>Machine Learning Ball | Stochastic MLB Intelligence</title>
     <meta name="description" content="Institutional MLB forecasts via proprietary queueing-theory simulations. Statistics-only modeling.">
+    <link rel="canonical" href="https://www.machinelearningball.com/">
+
+    <!-- Open Graph / Protocol -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Machine Learning Ball">
+    <meta property="og:url" content="https://www.machinelearningball.com/">
     <meta property="og:title" content="Machine Learning Ball — Stochastic Throughput">
     <meta property="og:description" content="Modeling Major League Baseball as a high-frequency stochastic service system.">
-    <meta property="og:url" content="https://www.machinelearningball.com">
-    <meta property="og:image" content="Gemini_Generated_Image_c4kdxuc4kdxuc4kd.jpg">
+    
+    <!-- Explicit Image Enforcement for X Crawler -->
+    <meta property="og:image" content="https://www.machinelearningball.com/assets/mlb_orb_canonical.png">
+    <meta property="og:image:secure_url" content="https://www.machinelearningball.com/assets/mlb_orb_canonical.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="675">
+    <meta property="og:image:alt" content="Machine Learning Ball - Electric Cyan Orb Logo">
+    
+    <!-- X / Twitter Specific Card Data -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:domain" content="machinelearningball.com">
+    <meta name="twitter:url" content="https://www.machinelearningball.com/">
     <meta name="twitter:site" content="@MLBallForecast">
+    <meta name="twitter:creator" content="@MLBallForecast">
     <meta name="twitter:title" content="Machine Learning Ball | Daily Forecast">
     <meta name="twitter:description" content="Institutional MLB forecasts via proprietary queueing-theory simulations.">
-    <meta name="twitter:image" content="Gemini_Generated_Image_c4kdxuc4kdxuc4kd.jpg">
+    <meta name="twitter:image" content="https://www.machinelearningball.com/assets/mlb_orb_canonical.png">
+    <meta name="twitter:image:alt" content="Machine Learning Ball - Electric Cyan Orb Logo">
 
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -146,11 +164,6 @@
         }
         .math-container::-webkit-scrollbar { display: none; }
         .math-container { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* UPLOAD AREA */
-        .upload-area { border: 2px dashed #2d3748; padding: 30px; text-align: center; border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-bottom: 20px; background: rgba(0,0,0,0.2); display: none; }
-        .upload-area.active { display: block; }
-        .upload-area:hover { border-color: var(--electric-cyan); background: rgba(0, 245, 255, 0.05); }
     </style>
 </head>
 <body class="antialiased">
@@ -160,7 +173,7 @@
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('overview')">
                 <div class="orb-glow" style="transform: scale(0.4); transform-origin: left center; width: 40px; height: 40px; margin-right: -15px;"></div>
-                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.3.5</span></span>
+                <span class="mono text-[10px] md:text-xs uppercase tracking-widest text-white font-bold">Machine Learning Ball <span class="text-cyan-500 ml-1">v3.6.0</span></span>
             </div>
             <div class="flex flex-wrap justify-center gap-4 md:space-x-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] text-gray-500">
                 <span id="btn-overview" class="cursor-pointer hover:text-white transition" onclick="showView('overview')">Overview</span>
@@ -199,7 +212,6 @@
 
             <!-- Methodology Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-20 border-t border-gray-900 pt-16">
-                <!-- Logic 01 -->
                 <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
                     <div>
                         <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 01 • Hitting</div>
@@ -210,7 +222,6 @@
                         $$P_0 = \left[ \sum_{n=0}^{c-1} \frac{(c\rho)^n}{n!} + \frac{(c\rho)^c}{c!(1-\rho)} \right]^{-1}$$
                     </div>
                 </div>
-                <!-- Logic 02 -->
                 <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
                     <div>
                         <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 02 • Pitching</div>
@@ -221,7 +232,6 @@
                         $$P_W = \frac{\frac{A^c}{c!} \frac{c}{c-A}}{\sum_{i=0}^{c-1} \frac{A^i}{i!} + \frac{A^c}{c!} \frac{c}{c-A}}$$
                     </div>
                 </div>
-                <!-- Logic 03 -->
                 <div class="p-6 md:p-8 border border-gray-800 rounded-sm card-hover flex flex-col justify-between h-full">
                     <div>
                         <div class="mono text-[8px] md:text-[9px] text-cyan-600 uppercase mb-4 tracking-widest">Logic 03 • The Model</div>
@@ -265,9 +275,7 @@
                 </div>
             </div>
 
-            <!-- Dynamic Grid (Auto-populated by CSV) -->
             <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <!-- Fallback Loading/Idle State -->
                 <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-forecast-state">
                     <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
                     <p class="text-[10px] text-gray-600 font-mono uppercase tracking-[0.2em]">Automated connection established. Awaiting forecast.csv propagation.</p>
@@ -291,7 +299,6 @@
                 </div>
             </div>
 
-            <!-- Dynamic Grid (Auto-populated by CSV) -->
             <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <div class="col-span-full p-12 text-center border border-dashed border-gray-800 rounded-sm bg-black/20" id="empty-results-state">
                     <div class="inline-block h-2 w-2 bg-cyan-500 rounded-full animate-ping mb-6"></div>
@@ -300,7 +307,7 @@
             </div>
         </section>
 
-        <!-- 4. PERFORMANCE VIEW (Charts) -->
+        <!-- 4. PERFORMANCE VIEW -->
         <section id="view-performance" class="view-section py-16 md:py-24">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
                 <div>
@@ -312,43 +319,42 @@
                 </div>
             </div>
 
-            <!-- KPI Dashboard -->
+            <!-- DYNAMIC KPI Dashboard -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Season Record</div>
-                    <div class="text-3xl font-black text-white">45-32</div>
+                    <div class="text-3xl font-black text-white" id="kpi-record">--</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Win %</div>
-                    <div class="text-3xl font-black text-white" id="kpi-win-rate">58.4%</div>
+                    <div class="text-3xl font-black text-white" id="kpi-win-rate">--%</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Avg Score Deviation</div>
-                    <div class="text-3xl font-black text-white">± 1.25</div>
+                    <div class="text-3xl font-black text-gray-500" id="kpi-dev">N/A</div>
                 </div>
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-[10px] text-cyan-600 uppercase mb-2">Brier Score Audited</div>
-                    <div class="text-3xl font-black text-emerald-400">Pass</div>
+                    <div class="text-3xl font-black text-emerald-400" id="kpi-brier">--</div>
                 </div>
             </div>
 
-            <!-- Charts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Chart 1: Win Probability Alignment -->
                 <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
                     <div class="mono text-xs text-cyan-500 uppercase tracking-widest mb-6">Cumulative Win Prob Alignment</div>
                     <canvas id="winChart" height="200"></canvas>
                 </div>
                 
-                <!-- Chart 2: Score Deviation Density -->
-                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm">
-                    <div class="mono text-xs text-cyan-500 uppercase tracking-widest mb-6">Score Deviation Variance (Runs)</div>
-                    <canvas id="devChart" height="200"></canvas>
+                <div class="bg-[#0f1626] border border-gray-800 p-6 rounded-sm flex flex-col items-center justify-center">
+                    <div class="mono text-xs text-cyan-500 uppercase tracking-widest mb-6 w-full text-left">Score Deviation Variance (Runs)</div>
+                    <!-- Fallback until block C generates deviation distributions -->
+                    <div class="orb-glow my-6" style="transform: scale(0.6);"></div>
+                    <div class="mono text-[10px] text-gray-500 uppercase tracking-[0.2em]">Pending Season Convergence</div>
                 </div>
             </div>
         </section>
 
-        <!-- 5. PLAYER MODELS (Coming Soon) -->
+        <!-- 5. PLAYER MODELS -->
         <section id="view-players" class="view-section py-24 md:py-32 text-center">
             <div class="inline-block relative">
                 <div class="orb-glow mx-auto mb-10" style="transform: scale(1.5);"></div>
@@ -393,14 +399,13 @@
                     &copy; 2026 MACHINE LEARNING BALL // CANONICAL SOURCE
                 </div>
                 <div class="text-[9px] text-gray-800 uppercase tracking-tighter italic">
-                    Proprietary Stack v3.3.5 • Statistics Only
+                    Proprietary Stack v3.6.0 • Statistics Only
                 </div>
             </div>
         </footer>
     </main>
 
     <script>
-        // --- NAVIGATION LOGIC ---
         function showView(viewName) {
             document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
             document.querySelectorAll('nav span').forEach(btn => btn.classList.remove('text-cyan-400'));
@@ -413,41 +418,18 @@
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            // Only render charts once they become visible to avoid Chart.js scaling bugs
             if (viewName === 'performance' && !window.chartsRendered) {
                 renderCharts(window.performanceData);
                 window.chartsRendered = true;
             }
         }
 
-        // ==========================================
-        // FORECASTS (AUTO-FETCH ONLY)
-        // ==========================================
-        async function fetchForecastCSV() {
-            try {
-                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
-                
-                // Appending time guarantees we get the newest file from GitHub, bypassing cache
-                const response = await fetch('data/forecast.csv?v=' + new Date().getTime());
-                if (!response.ok) throw new Error("forecast.csv not found.");
-                
-                const text = await response.text();
-                const data = parseForecastCSV(text);
-                renderGames(data);
-            } catch (error) {
-                console.log("Awaiting forecast canonical data feed:", error.message);
-            }
-        }
-
         function parseCSVHelper(text) {
             if (text.toLowerCase().includes('<!doctype html>')) return [];
-            
-            // Strip hidden BOM characters, null bytes, and all quotes to guarantee clean headers
             let cleanText = text.replace(/^\uFEFF/, '').replace(/\0/g, '').replace(/"/g, '');
             const lines = cleanText.split(/\r\n|\n|\r/).filter(line => line.trim() !== '');
             if (lines.length < 2) return [];
             
-            // Auto-detect if CSV uses tabs or semicolons instead of commas
             let delimiter = ',';
             if (lines[0].includes('\t')) delimiter = '\t';
             else if (lines[0].includes(';')) delimiter = ';';
@@ -457,40 +439,52 @@
             return lines.slice(1).map(line => {
                 const values = line.split(delimiter).map(v => v.trim());
                 let obj = {};
-                headers.forEach((h, i) => {
-                    obj[h] = values[i] || "";
-                });
+                headers.forEach((h, i) => { obj[h] = values[i] || ""; });
                 return obj;
             });
+        }
+
+        // ==========================================
+        // 1. FORECASTS (BLOCK A)
+        // ==========================================
+        async function fetchForecastCSV() {
+            try {
+                if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
+                const response = await fetch('data/forecast.csv?v=' + new Date().getTime());
+                if (!response.ok) throw new Error("forecast.csv not found.");
+                const text = await response.text();
+                const data = parseForecastCSV(text);
+                renderGames(data);
+            } catch (error) {
+                console.log("Awaiting forecast canonical data feed:", error.message);
+            }
         }
 
         function parseForecastCSV(text) {
             const rows = parseCSVHelper(text);
             return rows.map(obj => {
-                // Expanded fallback names just in case
-                const away = obj['away_team'] || obj['away'] || "AWAY";
-                const home = obj['home_team'] || obj['home'] || "HOME";
+                const away = obj['away'] || "AWAY";
+                const home = obj['home'] || "HOME";
                 
+                // Parse Predicted Score (e.g., "Away 4 — Home 5") to extract numbers
                 let awayScore = "0.0", homeScore = "0.0";
-                let predScore = obj['predicted_score'] || obj['proj_score'] || "";
-                if (predScore) {
-                    const nums = predScore.match(/\d+(\.\d+)?/g);
+                let predScoreStr = obj['predicted_score'] || "";
+                if (predScoreStr) {
+                    const nums = predScoreStr.match(/\d+(\.\d+)?/g);
                     if (nums && nums.length >= 2) {
                         awayScore = nums[0];
                         homeScore = nums[nums.length - 1]; 
                     }
-                } else {
-                    awayScore = obj['away_score'] || obj['away_rpg_blend'] || "0.0";
-                    homeScore = obj['home_score'] || obj['home_rpg_blend'] || "0.0";
                 }
                 
-                let winProb = obj['winprob'] || obj['win_prob'] || obj['p_home_final'] || "50.0";
+                let winProb = obj['winprob'] || "50.0";
                 if (parseFloat(winProb) <= 1) winProb = (parseFloat(winProb) * 100).toFixed(1);
 
-                let rawDate = obj['start (ct)'] || obj['date'] || obj['game_day_ct'] || new Date().toISOString();
+                // Start (CT) directly from Block A
+                let rawDate = obj['start (ct)'] || "TBD";
                 
                 let insight = "";
-                const conf = obj['confidence'] || obj['confidence_tag'] || "";
+                const conf = obj['confidence'] || "";
                 if (conf === "Too-Uncertain") insight = "Model signals low-confidence convergence. Institutional caution advised.";
                 else insight = `Standard queue pressure. Reliability level NORMAL.`;
 
@@ -502,19 +496,22 @@
             const grid = document.getElementById('games-grid');
             const dateLabel = document.getElementById('forecast-date');
             if(games.length === 0) return;
-            dateLabel.innerText = games[0].date;
+            
+            // Appending " CT" based on Block A's string format (e.g. 2026-03-26 03:05 PM)
+            dateLabel.innerText = games[0].date.includes("CT") ? games[0].date : games[0].date + " CT"; 
             grid.innerHTML = ''; 
 
             games.forEach(game => {
+                const dateDisplay = game.date.includes("CT") ? game.date : game.date + " CT";
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div class="orb-glow"></div>
-                        <div class="node-tag">NODE 3.3.5</div>
+                        <div class="node-tag">NODE 3.6.0</div>
                     </div>
                     <div class="matchup-web">${game.away} @ ${game.home}</div>
-                    <div class="date-web">${game.date}</div>
+                    <div class="date-web">${dateDisplay}</div>
                     
                     <div class="metrics-row">
                         <div class="metric-block">
@@ -538,15 +535,13 @@
         }
 
         // ==========================================
-        // DAILY RESULTS (AUTO-FETCH ONLY)
+        // 2. DAILY RESULTS (BLOCK B)
         // ==========================================
         async function fetchResultsCSV() {
             try {
                 if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
-                
                 const response = await fetch('data/results.csv?v=' + new Date().getTime());
                 if (!response.ok) throw new Error("results.csv not found.");
-                
                 const text = await response.text();
                 const data = parseResultsCSV(text);
                 renderResultGames(data);
@@ -558,37 +553,35 @@
         function parseResultsCSV(text) {
             const rows = parseCSVHelper(text);
             return rows.map(obj => {
-                const away = obj['away_team'] || obj['away'] || "AWAY";
-                const home = obj['home_team'] || obj['home'] || "HOME";
-                const actAway = obj['away_runs'] || obj['actual_away'] || obj['away_final'] || "0";
-                const actHome = obj['home_runs'] || obj['actual_home'] || obj['home_final'] || "0";
+                const away = obj['away_team'] || "AWAY";
+                const home = obj['home_team'] || "HOME";
+                const actAway = obj['away_runs'] || "0";
+                const actHome = obj['home_runs'] || "0";
 
-                let dateStr = "PREVIOUS SLATE";
-                if (obj['game_id'] && obj['game_id'].length >= 8) {
-                    const year = obj['game_id'].substring(0,4);
-                    const month = obj['game_id'].substring(4,6);
-                    const day = obj['game_id'].substring(6,8);
-                    const d = new Date(`${year}-${month}-${day}T12:00:00Z`);
-                    if(!isNaN(d)) dateStr = d.toLocaleDateString('en-US', {month:'short', day:'2-digit', year:'numeric'}).toUpperCase();
-                }
+                // Map start_time_ct from Block B
+                let dateStr = obj['start_time_ct'] || "PREVIOUS SLATE";
 
-                let brier = obj['brier_score'] || "N/A";
+                let brier = obj['brier_final'] || "N/A";
                 let insight = `Actual Winner: ${obj['actual_winner'] || 'None'}. Brier Score: ${brier}.`;
 
-                return { away, home, projAway: "N/A", projHome: "N/A", actAway, actHome, insight, date: dateStr };
+                return { away, home, actAway, actHome, insight, date: dateStr };
             });
         }
 
         function renderResultGames(games) {
             const grid = document.getElementById('results-grid');
             const dateLabel = document.getElementById('results-date');
-            
             if(games.length === 0) return;
             
-            dateLabel.innerText = games[0].date;
+            // Standardize CT Display
+            let baseDate = games[0].date;
+            if (baseDate !== "PREVIOUS SLATE" && !baseDate.includes("CT")) baseDate += " CT";
+            dateLabel.innerText = baseDate;
+            
             grid.innerHTML = ''; 
 
             games.forEach(game => {
+                const dateDisplay = game.date.includes("CT") || game.date === "PREVIOUS SLATE" ? game.date : game.date + " CT";
                 const card = document.createElement('div');
                 card.className = 'game-card'; 
                 card.innerHTML = `
@@ -597,7 +590,7 @@
                         <div class="node-tag">VERIFIED FINAL</div>
                     </div>
                     <div class="matchup-web">${game.away} @ ${game.home}</div>
-                    <div class="date-web">${game.date}</div>
+                    <div class="date-web">${dateDisplay}</div>
                     
                     <div class="metrics-row">
                         <div class="metric-block">
@@ -620,73 +613,75 @@
         }
 
         // ==========================================
-        // PERFORMANCE METRICS (NEW IMPLEMENTATION)
+        // 3. PERFORMANCE METRICS (BLOCK C)
         // ==========================================
-        async function fetchPerformanceMetricsCSV() {
+        async function fetchPerformanceData() {
             try {
                 if (window.location.protocol === 'file:') throw new Error("Local file:// protocol blocking fetch.");
-                const response = await fetch('data/performance_metrics.csv?v=' + new Date().getTime());
-                if (!response.ok) throw new Error("performance_metrics.csv not found.");
                 
-                const text = await response.text();
-                window.performanceData = parsePerformanceCSV(text);
+                // Fetch Metrics (for Charting)
+                const resMetrics = await fetch('data/performance_metrics.csv?v=' + new Date().getTime());
+                let dates = [], winRates = [];
+                if (resMetrics.ok) {
+                    const metricsText = await resMetrics.text();
+                    const metricRows = parseCSVHelper(metricsText);
+                    metricRows.forEach(obj => {
+                        if (obj['date']) dates.push(obj['date']);
+                        if (obj['overall_win_rate']) winRates.push((parseFloat(obj['overall_win_rate']) * 100).toFixed(1));
+                    });
+                }
+
+                // Fetch Summary (for Master KPIs)
+                const resSummary = await fetch('data/performance_summary.csv?v=' + new Date().getTime());
+                let kpis = { record: "--", winRate: "--%", brier: "--" };
+                if (resSummary.ok) {
+                    const summaryText = await resSummary.text();
+                    const summaryRows = parseCSVHelper(summaryText);
+                    if (summaryRows && summaryRows.length > 0) {
+                        const sRow = summaryRows[summaryRows.length - 1];
+                        const w = sRow['overall_w'] || "0";
+                        const l = sRow['overall_l'] || "0";
+                        kpis.record = `${w}-${l}`;
+                        
+                        let wr = parseFloat(sRow['overall_win_rate'] || 0);
+                        if (wr <= 1.0) wr = wr * 100;
+                        kpis.winRate = wr.toFixed(1) + "%";
+                        
+                        const br = parseFloat(sRow['overall_brier_mean'] || 0);
+                        kpis.brier = br ? br.toFixed(4) : "--";
+                    }
+                }
+
+                window.performanceData = { dates, winRates, kpis };
                 
-                // If they are already viewing the performance tab, render it immediately
                 if (document.getElementById('view-performance').classList.contains('active')) {
                     renderCharts(window.performanceData);
                     window.chartsRendered = true;
                 }
             } catch (error) {
-                console.log("Awaiting performance data feed:", error.message);
+                console.log("Awaiting performance data feeds:", error.message);
             }
         }
 
-        function parsePerformanceCSV(text) {
-            const rows = parseCSVHelper(text);
-            if (!rows || rows.length === 0) return null;
-            
-            let dates = [];
-            let winRates = [];
-            
-            rows.forEach(obj => {
-                if (obj['date']) {
-                    try {
-                        const d = new Date(`${obj['date']}T12:00:00Z`);
-                        dates.push(d.toLocaleDateString('en-US', {month:'short', day:'2-digit'}));
-                    } catch(e) {
-                        dates.push(obj['date']);
-                    }
-                }
-                if (obj['overall_win_rate']) {
-                    winRates.push((parseFloat(obj['overall_win_rate']) * 100).toFixed(1));
-                }
-            });
-            
-            return { dates, winRates };
-        }
-
-        // ==========================================
-        // PERFORMANCE CHARTING LOGIC
-        // ==========================================
         function renderCharts(perfData) {
-            // Destroy existing charts to prevent hover glitches before redrawing
             if (window.winChartInstance) window.winChartInstance.destroy();
-            if (window.devChartInstance) window.devChartInstance.destroy();
 
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.font.family = "'JetBrains Mono', monospace";
             
-            let winLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7'];
-            let winData = [52, 54, 55.5, 54.2, 57, 58.1, 58.4];
+            // Default Placeholders in case CSV structure is missing fields
+            let winLabels = ['Week 1', 'Week 2', 'Week 3'];
+            let winData = [50, 52, 54];
 
-            // If we successfully pulled data from performance_metrics.csv, inject it here
             if (perfData && perfData.dates && perfData.dates.length > 0) {
                 winLabels = perfData.dates;
                 winData = perfData.winRates;
                 
-                // Update the Top KPI Win % stat dynamically to match chart
-                const lastWinRate = winData[winData.length - 1];
-                document.getElementById('kpi-win-rate').innerText = lastWinRate + '%';
+                if(perfData.kpis) {
+                    document.getElementById('kpi-record').innerText = perfData.kpis.record;
+                    document.getElementById('kpi-win-rate').innerText = perfData.kpis.winRate;
+                    document.getElementById('kpi-brier').innerText = perfData.kpis.brier;
+                }
             }
 
             const ctxWin = document.getElementById('winChart').getContext('2d');
@@ -716,28 +711,6 @@
                     plugins: { legend: { display: false } }
                 }
             });
-
-            const ctxDev = document.getElementById('devChart').getContext('2d');
-            window.devChartInstance = new Chart(ctxDev, {
-                type: 'bar',
-                data: {
-                    labels: ['0-1 Runs', '1-2 Runs', '2-3 Runs', '3-4 Runs', '4+ Runs'],
-                    datasets: [{
-                        label: 'Frequency',
-                        data: [42, 25, 12, 5, 2],
-                        backgroundColor: '#ef4444',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' } },
-                        x: { grid: { display: false } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
         }
 
         // Init
@@ -745,9 +718,8 @@
             showView('overview');
             fetchForecastCSV(); 
             fetchResultsCSV(); 
-            fetchPerformanceMetricsCSV(); // Now initializes the 3rd CSV!
+            fetchPerformanceData();
 
-            // Safely execute math rendering once the DOM is fully loaded and ready
             if (typeof renderMathInElement === 'function') {
                 renderMathInElement(document.body, {
                     delimiters: [
